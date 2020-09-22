@@ -59,6 +59,13 @@ var OAuth2Providers = map[string]OAuth2Provider{
 		},
 	},
 	"yandex": {Name: "yandex", DisplayName: "Yandex", Image: "/img/auth/yandex.png"},
+	"mastodon": {Name: "mastodon", DisplayName: "Mastodon", Image: "//closed.social/favicon.ico",
+		CustomURLMapping: &oauth2.CustomURLMapping{
+			TokenURL:   oauth2.GetDefaultTokenURL("mastodon"),
+			AuthURL:    oauth2.GetDefaultAuthURL("mastodon"),
+			ProfileURL: oauth2.GetDefaultProfileURL("mastodon"),
+		},
+	},
 }
 
 // OAuth2DefaultCustomURLMappings contains the map of default URL's for OAuth2 providers that are allowed to have custom urls
@@ -69,6 +76,7 @@ var OAuth2DefaultCustomURLMappings = map[string]*oauth2.CustomURLMapping{
 	"gitlab":    OAuth2Providers["gitlab"].CustomURLMapping,
 	"gitea":     OAuth2Providers["gitea"].CustomURLMapping,
 	"nextcloud": OAuth2Providers["nextcloud"].CustomURLMapping,
+	"mastodon": OAuth2Providers["mastodon"].CustomURLMapping,
 }
 
 // GetActiveOAuth2ProviderLoginSources returns all actived LoginOAuth2 sources

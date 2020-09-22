@@ -10,6 +10,7 @@ import (
 
 	"code.gitea.io/gitea/modules/log"
 	"code.gitea.io/gitea/modules/setting"
+	"code.gitea.io/gitea/modules/auth/oauth2/mastodon"
 
 	uuid "github.com/google/uuid"
 	"github.com/lafriks/xormstore"
@@ -213,6 +214,22 @@ func createProvider(providerName, providerType, clientID, clientSecret, openIDCo
 	case "yandex":
 		// See https://tech.yandex.com/passport/doc/dg/reference/response-docpage/
 		provider = yandex.New(clientID, clientSecret, callbackURL, "login:email", "login:info", "login:avatar")
+	case "mastodon":
+		authURL := mastodon.AuthURL
+		tokenURL := mastodon.TokenURL
+		profileURL := mastodon.ProfileURL
+		if customURLMapping != nil {
+			if len(customURLMapping.AuthURL) > 0 {
+				authURL = customURLMapping.AuthURL
+			}
+			if len(customURLMapping.TokenURL) > 0 {
+				tokenURL = customURLMapping.TokenURL
+			}
+			if len(customURLMapping.ProfileURL) > 0 {
+				profileURL = customURLMapping.ProfileURL
+			}
+		}
+	  provider = mastodon.NewCustomisedURL(clientID, clientSecret, callbackURL, authURL, tokenURL, profileURL, "read:accounts")
 	}
 
 	// always set the name if provider is created so we can support multiple setups of 1 provider
@@ -234,6 +251,8 @@ func GetDefaultTokenURL(provider string) string {
 		return gitea.TokenURL
 	case "nextcloud":
 		return nextcloud.TokenURL
+	case "mastodon":
+		return mastodon.TokenURL
 	}
 	return ""
 }
@@ -249,6 +268,8 @@ func GetDefaultAuthURL(provider string) string {
 		return gitea.AuthURL
 	case "nextcloud":
 		return nextcloud.AuthURL
+	case "mastodon":
+		return mastodon.AuthURL
 	}
 	return ""
 }
@@ -264,6 +285,8 @@ func GetDefaultProfileURL(provider string) string {
 		return gitea.ProfileURL
 	case "nextcloud":
 		return nextcloud.ProfileURL
+	case "mastodon":
+		return mastodon.ProfileURL
 	}
 	return ""
 }
